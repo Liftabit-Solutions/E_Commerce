@@ -90,18 +90,18 @@ const WizardHeader: React.FC<{
               aria-label={`Step ${idx + 1}: ${s.label}`}
             >
               {/* Step indicator circle */}
-              <div className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 ${
+              <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 ${
                 isActive
-                  ? 'bg-slate-950 text-white shadow-md ring-4 ring-slate-200 scale-110 font-mono'
+                  ? 'bg-slate-950 text-white shadow-md ring-2 sm:ring-4 ring-slate-200 scale-105 sm:scale-110 font-mono'
                   : isPassed
                   ? 'bg-slate-950 text-white shadow-xs'
                   : isAccessible
                   ? 'bg-white border-2 border-slate-900 text-slate-950 font-mono font-bold'
                   : 'bg-slate-100 border border-slate-200 text-slate-400 font-mono'
               }`}>
-                {isPassed ? <Check size={14} strokeWidth={3} /> : idx + 1}
+                {isPassed ? <Check size={13} strokeWidth={3} /> : idx + 1}
               </div>
-              <span className={`text-[11px] sm:text-xs tracking-wider uppercase transition-colors ${
+              <span className={`text-[9px] sm:text-xs tracking-tight sm:tracking-wider uppercase transition-colors text-center leading-tight truncate max-w-[52px] sm:max-w-none ${
                 isActive
                   ? 'text-slate-950 font-black'
                   : isPassed || isAccessible

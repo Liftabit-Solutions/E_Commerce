@@ -1222,21 +1222,21 @@ const Orders: React.FC = () => {
                         return (
                           <div key={step.key} className="flex flex-col items-center text-center">
                             <div
-                              className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold transition-all shrink-0 ${
+                              className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-xs font-bold transition-all shrink-0 ${
                                 isCurrent
-                                  ? 'bg-slate-950 text-white ring-4 ring-slate-200 scale-105 shadow-xs font-mono'
+                                  ? 'bg-slate-950 text-white ring-2 sm:ring-4 ring-slate-200 scale-105 shadow-xs font-mono'
                                   : isDone
                                   ? 'bg-slate-950 text-white shadow-xs'
                                   : 'bg-white border-2 border-slate-300 text-slate-500 shadow-xs font-mono'
                               }`}
                             >
                               {isDone ? (
-                                <Check size={16} strokeWidth={2.5} className="shrink-0 text-white" />
+                                <Check size={14} strokeWidth={2.5} className="shrink-0 text-white" />
                               ) : (
                                 <span>{sIdx + 1}</span>
                               )}
                             </div>
-                            <span className={`text-[10px] sm:text-xs mt-2.5 leading-tight break-words px-1 max-w-[90px] ${isCurrent ? 'font-bold text-slate-950' : isDone ? 'text-slate-800 font-semibold' : 'text-slate-500 font-medium'}`}>
+                            <span className={`text-[9px] sm:text-xs mt-2 leading-tight break-words px-0.5 max-w-[64px] sm:max-w-[90px] ${isCurrent ? 'font-bold text-slate-950' : isDone ? 'text-slate-800 font-semibold' : 'text-slate-500 font-medium'}`}>
                               {step.label}
                             </span>
                           </div>

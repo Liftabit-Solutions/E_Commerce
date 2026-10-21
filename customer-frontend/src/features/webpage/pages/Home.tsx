@@ -215,7 +215,7 @@ const Home: React.FC = () => {
             </button>
           </div>
 
-          <div className="flex items-center gap-2.5 pb-2 overflow-x-auto scrollbar-none">
+          <div className="flex items-center gap-2.5 pb-2 overflow-x-auto scrollbar-none w-full max-w-full -mx-4 px-4 sm:mx-0 sm:px-0">
             <button
               type="button"
               className="shrink-0 text-xs font-bold px-5 py-2.5 rounded-xl bg-slate-950 text-white hover:bg-black active:scale-[0.98] cursor-pointer transition-all shadow-xs min-h-[42px] flex items-center gap-2"

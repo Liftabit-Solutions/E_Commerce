@@ -114,7 +114,7 @@ const Footer: React.FC = () => {
             <div className="pt-2">
               <p className="text-xs font-bold text-white mb-2">Subscribe for Special Member Offers</p>
               {!isSubscribed ? (
-                <form onSubmit={handleNewsletterSubmit} className="flex items-center gap-2 max-w-md">
+                <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 max-w-md">
                   <div className="relative flex-1">
                     <Mail size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
                     <input

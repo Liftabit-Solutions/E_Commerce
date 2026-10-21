@@ -119,12 +119,12 @@ const HomeCareApp: React.FC = () => {
   const isAuthPage = curPage === 'login' || curPage === 'register';
 
   return (
-    <div className={`${isAuthPage ? 'h-screen overflow-hidden' : 'min-h-screen'} flex flex-col bg-slate-50 text-slate-900 overflow-x-clip w-full`}>
+    <div className={`${isAuthPage ? 'min-h-screen lg:h-screen lg:overflow-hidden' : 'min-h-screen'} flex flex-col bg-slate-50 text-slate-900 overflow-x-clip w-full`}>
       {/* Sticky header navbar - hidden on checkout completion, login, and register pages */}
       {!hideNavbar && !isAuthPage && <Navigation />}
 
       {/* Main viewport */}
-      <main className={`flex-1 w-full ${isAuthPage ? 'h-full overflow-hidden' : 'overflow-x-clip'}`}>
+      <main className={`flex-1 w-full ${isAuthPage ? 'min-h-full lg:h-full lg:overflow-hidden' : 'overflow-x-clip'}`}>
         {renderActivePage()}
       </main>
 

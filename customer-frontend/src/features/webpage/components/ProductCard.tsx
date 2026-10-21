@@ -92,7 +92,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <div className="space-y-1">
           {/* Row 1: Category & Star Rating */}
           <div className="flex items-center justify-between text-[10px]">
-            <span className="font-bold text-slate-600 uppercase tracking-wider truncate max-w-[120px]">
+            <span className="font-bold text-slate-600 uppercase tracking-wider truncate max-w-[68px] xs:max-w-[100px] sm:max-w-[120px]">
               {product.cat || 'Essential'}
             </span>
             <div className="flex items-center gap-1 text-slate-700 font-bold shrink-0">
@@ -109,9 +109,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </div>
 
         {/* Row 3: Pricing & Action Stepper */}
-        <div className="flex items-center justify-between pt-1 border-t border-slate-100 mt-auto">
+        <div className="flex items-center justify-between pt-1 border-t border-slate-100 mt-auto gap-1 flex-wrap sm:flex-nowrap">
           {/* Price Stack */}
-          <div className="flex items-baseline gap-1.5 leading-none">
+          <div className="flex items-baseline gap-1.5 leading-none shrink-0">
             <span className="text-sm sm:text-base font-extrabold text-slate-950 font-price">
               ₹{product.price.toLocaleString('en-IN')}
             </span>

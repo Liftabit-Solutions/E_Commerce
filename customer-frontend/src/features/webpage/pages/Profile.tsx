@@ -846,7 +846,7 @@ const Profile: React.FC = () => {
           </div>
 
           {/* Nav Items Panel */}
-          <aside className="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden flex flex-col divide-y divide-slate-100">
+          <aside className="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden flex flex-row lg:flex-col overflow-x-auto divide-x lg:divide-x-0 lg:divide-y divide-slate-100 scrollbar-none">
             <button
               onClick={() => setActiveTab('profile')}
               className={`flex items-center gap-3 px-5 py-4 text-xs uppercase font-bold tracking-wider transition-all cursor-pointer text-left border-none w-full outline-none min-h-[48px] ${

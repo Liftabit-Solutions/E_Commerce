@@ -96,7 +96,7 @@ const InvoiceModal: React.FC = () => {
 
   return (
     <div 
-      className="fixed inset-0 z-[99999] flex items-start justify-center bg-blk/70 p-4 md:p-8 pt-20 md:pt-24 backdrop-blur-xs overflow-y-auto invoice-modal-overlay"
+      className="fixed inset-0 z-[99999] flex items-start justify-center bg-blk/70 p-3 sm:p-6 pt-4 md:pt-12 backdrop-blur-xs overflow-y-auto invoice-modal-overlay"
       onClick={(e) => {
         if (e.target === e.currentTarget) {
           onClose();

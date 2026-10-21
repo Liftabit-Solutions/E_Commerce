@@ -116,27 +116,27 @@ const BannerCarousel: React.FC = () => {
               </div>
 
               {/* Text overlays (Renders over both image and gradient background) */}
-              <div className="absolute inset-0 flex items-center justify-start text-left p-8 sm:p-20 z-10">
+              <div className="absolute inset-0 flex items-center justify-start text-left px-11 xs:px-14 sm:px-20 py-6 sm:py-20 z-10">
                 <div className={`max-w-[640px] transition-all duration-700 ease-out transform ${
                   isActive ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
                 }`}>
                   {banner.label && (
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/25 bg-black/40 text-slate-100 text-xs font-semibold backdrop-blur-md mb-4 shadow-sm">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/25 bg-black/40 text-slate-100 text-xs font-semibold backdrop-blur-md mb-3 sm:mb-4 shadow-sm">
                       <Sparkles size={13} className="text-amber-400" />
                       <span className="tracking-wide">{banner.label}</span>
                     </div>
                   )}
-                  <h2 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-[1.12] mb-4 drop-shadow-md">
+                  <h2 className="text-xl xs:text-2xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-[1.15] mb-2 sm:mb-4 drop-shadow-md">
                     {banner.title || 'Premium Online Catalog'}
                   </h2>
-                  <p className="text-sm sm:text-base text-slate-200 max-w-[500px] leading-relaxed mb-6 font-normal drop-shadow-sm">
+                  <p className="text-xs xs:text-sm sm:text-base text-slate-200 max-w-[500px] leading-relaxed mb-4 sm:mb-6 font-normal drop-shadow-sm line-clamp-3 sm:line-clamp-none">
                     {banner.subtitle || 'Discover premium essentials curated for daily life'}
                   </p>
                   {banner.ctaText && (
                     <button
                       type="button"
                       onClick={() => setCurPage(banner.ctaLink || 'products')}
-                      className="inline-flex items-center justify-center px-6 py-3.5 rounded-xl bg-white text-slate-950 font-bold text-xs sm:text-sm hover:bg-slate-100 active:scale-[0.98] transition-all cursor-pointer shadow-lg hover:shadow-xl min-h-[44px]"
+                      className="inline-flex items-center justify-center px-5 sm:px-6 py-2.5 sm:py-3.5 rounded-xl bg-white text-slate-950 font-bold text-xs sm:text-sm hover:bg-slate-100 active:scale-[0.98] transition-all cursor-pointer shadow-lg hover:shadow-xl min-h-[38px] sm:min-h-[44px]"
                     >
                       {banner.ctaText}
                     </button>
@@ -148,24 +148,24 @@ const BannerCarousel: React.FC = () => {
         })}
       </div>
 
-      {/* Nav Arrows (44px touch target) - Only show if more than 1 active banner */}
+      {/* Nav Arrows - Only show if more than 1 active banner */}
       {activeBanners.length > 1 && (
         <>
           <button
             type="button"
-            className="absolute top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-white/30 bg-black/50 text-white flex items-center justify-center transition-all duration-200 hover:bg-white hover:text-slate-950 active:scale-[0.95] cursor-pointer left-4 shadow-md backdrop-blur-sm"
+            className="absolute top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-11 sm:h-11 rounded-full border border-white/30 bg-black/60 text-white flex items-center justify-center transition-all duration-200 hover:bg-white hover:text-slate-950 active:scale-[0.95] cursor-pointer left-1.5 sm:left-4 shadow-md backdrop-blur-sm"
             onClick={handlePrev}
             aria-label="Previous slide"
           >
-            <ChevronLeft size={20} strokeWidth={2.2} />
+            <ChevronLeft size={18} strokeWidth={2.2} />
           </button>
           <button
             type="button"
-            className="absolute top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-white/30 bg-black/50 text-white flex items-center justify-center transition-all duration-200 hover:bg-white hover:text-slate-950 active:scale-[0.95] cursor-pointer right-4 shadow-md backdrop-blur-sm"
+            className="absolute top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-11 sm:h-11 rounded-full border border-white/30 bg-black/60 text-white flex items-center justify-center transition-all duration-200 hover:bg-white hover:text-slate-950 active:scale-[0.95] cursor-pointer right-1.5 sm:right-4 shadow-md backdrop-blur-sm"
             onClick={handleNext}
             aria-label="Next slide"
           >
-            <ChevronRight size={20} strokeWidth={2.2} />
+            <ChevronRight size={18} strokeWidth={2.2} />
           </button>
         </>
       )}

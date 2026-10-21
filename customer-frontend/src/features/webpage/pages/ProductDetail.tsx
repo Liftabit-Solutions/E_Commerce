@@ -611,18 +611,18 @@ const ProductDetail: React.FC = () => {
           {/* Left Column: Sticky Image Gallery (6 cols on lg, 50% width) */}
           <div className="lg:col-span-6 xl:col-span-6 lg:sticky lg:top-[88px] self-start space-y-4">
             <div className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-xs">
-              {/* Gallery Stage: Left Vertical Thumbnails + Right Hero Image */}
-              <div className="flex gap-3 sm:gap-4 items-start">
-                {/* Left-most Vertical Thumbnail Rail */}
+              {/* Gallery Stage: Vertical/Horizontal Thumbnails + Hero Image */}
+              <div className="flex flex-col-reverse sm:flex-row gap-3 sm:gap-4 items-start w-full">
+                {/* Thumbnail Rail (Horizontal on mobile, vertical on sm+) */}
                 {product.imgs && product.imgs.length > 1 && (
-                  <div className="flex flex-col gap-2.5 overflow-y-auto max-h-[420px] sm:max-h-[460px] scrollbar-thin pr-1.5 shrink-0">
+                  <div className="flex sm:flex-col gap-2.5 overflow-x-auto sm:overflow-y-auto max-w-full sm:max-h-[460px] scrollbar-thin pb-1 sm:pb-0 pr-0 sm:pr-1.5 shrink-0 w-full sm:w-auto">
                     {product.imgs.map((src, idx) => (
                       <button
                         key={idx}
                         type="button"
                         onClick={() => handleThumbnailClick(idx)}
                         aria-label={`View product image ${idx + 1}`}
-                        className={`w-14 h-14 sm:w-16 sm:h-16 rounded-xl border p-1.5 bg-slate-50 overflow-hidden cursor-pointer transition-all shrink-0 flex items-center justify-center ${
+                        className={`w-12 h-12 sm:w-16 sm:h-16 rounded-xl border p-1 bg-slate-50 overflow-hidden cursor-pointer transition-all shrink-0 flex items-center justify-center ${
                           idx === activeImgIdx
                             ? 'border-slate-950 ring-2 ring-slate-950/20 shadow-xs'
                             : 'border-slate-200 hover:border-slate-400 opacity-70 hover:opacity-100'
@@ -1361,7 +1361,7 @@ const ProductDetail: React.FC = () => {
       </main>
 
       {/* ── Mobile Sticky Bottom Buy Bar (visible on sm/xs screens) ── */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 px-4 py-3 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] flex items-center justify-between gap-3">
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] shadow-[0_-4px_20px_rgba(0,0,0,0.08)] flex items-center justify-between gap-3">
         <div className="flex items-center gap-2.5 min-w-0">
           {product.imgs && product.imgs[0] && (
             <img

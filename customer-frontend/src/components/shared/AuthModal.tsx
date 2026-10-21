@@ -349,20 +349,20 @@ const AuthModal: React.FC = () => {
 
   return (
     <div
-      className="fixed inset-0 bg-blk/60 backdrop-blur-md z-[9990] flex items-center justify-center p-4 overflow-y-auto animate-fadeIn"
+      className="fixed inset-0 bg-blk/60 backdrop-blur-md z-[9990] flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-fadeIn"
       onClick={handleBackdropClick}
     >
-      <div className="bg-wht rounded-2xl w-full max-w-[860px] shadow-premium-xl relative border border-bdrl overflow-hidden flex flex-col md:grid md:grid-cols-5 my-auto animate-slideUp">
+      <div className="bg-wht rounded-2xl w-full max-w-[860px] shadow-premium-xl relative border border-bdrl overflow-hidden flex flex-col md:grid md:grid-cols-5 my-auto animate-slideUp max-h-[90vh] md:max-h-none">
         
         {/* Left Column - Jade Eco Brand Sidebar */}
-        <div className="bg-primary text-wht p-8 md:col-span-2 flex flex-col justify-between relative overflow-hidden select-none">
+        <div className="bg-primary text-wht p-6 sm:p-8 md:col-span-2 flex flex-col justify-between relative overflow-hidden select-none shrink-0">
           {/* Eco Floating Leaf Background Gradients */}
           <div className="absolute top-0 right-0 w-44 h-44 bg-primary-hover/40 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
           <div className="absolute bottom-0 left-0 w-52 h-52 bg-primary-deep/50 rounded-full blur-3xl -ml-24 -mb-24 pointer-events-none" />
 
           {/* Eco Header Brand */}
           <div className="relative z-10">
-            <div className="flex items-center gap-2 mb-8">
+            <div className="flex items-center gap-2 mb-4 sm:mb-8">
               <div className="w-9 h-9 border border-wht/20 rounded-tr-[50%] rounded-tl-[50%] rounded-bl-[50%] rounded-br-[6px] flex items-center justify-center bg-wht/10">
                 <Sparkles className="text-accent-light" size={18} />
               </div>
@@ -371,10 +371,10 @@ const AuthModal: React.FC = () => {
               </span>
             </div>
 
-            <h3 className="font-display text-2xl font-bold mb-4 leading-snug tracking-tight">
+            <h3 className="font-display text-xl sm:text-2xl font-bold mb-2 sm:mb-4 leading-snug tracking-tight">
               {isRegister ? "Join Our Community" : "Curated for Modern Living"}
             </h3>
-            <p className="text-xs text-primary-light leading-relaxed mb-6">
+            <p className="text-xs text-primary-light leading-relaxed mb-4 sm:mb-6">
               Experience the standard in curated essentials. Premium quality products designed for intentional living and everyday reliability.
             </p>
           </div>
@@ -405,14 +405,14 @@ const AuthModal: React.FC = () => {
           </div>
 
           {/* Footer note */}
-          <div className="relative z-10 text-[0.68rem] text-primary-light/80 flex items-center gap-1.5 pt-4 border-t border-wht/10">
+          <div className="relative z-10 text-[0.68rem] text-primary-light/80 flex items-center gap-1.5 pt-3 border-t border-wht/10 hidden sm:flex">
             <Shield size={12} className="text-accent-light" />
             Secure customer account login verified by Firebase
           </div>
         </div>
 
         {/* Right Column - Authentication Forms */}
-        <div className="p-7 sm:p-9 md:p-11 md:col-span-3 flex flex-col justify-center relative">
+        <div className="p-5 sm:p-8 md:p-11 md:col-span-3 flex flex-col justify-center relative overflow-y-auto max-h-[75vh] md:max-h-none">
           {/* Close button */}
           <button
             className="absolute top-5 right-5 w-8 h-8 rounded-full border border-bdrl flex items-center justify-center text-mut hover:bg-sur hover:text-ink hover:border-mid transition-all duration-200 ease-out bg-transparent cursor-pointer"

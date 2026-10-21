@@ -155,28 +155,28 @@ const Navigation: React.FC = () => {
 
       {/* Main High-Navbar */}
       <nav className="bg-white">
-        <div className="max-w-[1440px] mx-auto flex items-center justify-between px-4 sm:px-6 lg:px-8 h-[68px] gap-3 sm:gap-6">
+        <div className="max-w-[1440px] mx-auto flex items-center justify-between px-2.5 sm:px-6 lg:px-8 h-[64px] sm:h-[68px] gap-1.5 sm:gap-6">
           
           {/* Left: Mobile Menu Trigger + Brand Identity */}
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
             <button
-              className="lg:hidden w-10 h-10 flex items-center justify-center text-slate-700 hover:text-slate-950 transition-colors cursor-pointer rounded-xl hover:bg-slate-100"
+              className="lg:hidden w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-slate-700 hover:text-slate-950 transition-colors cursor-pointer rounded-xl hover:bg-slate-100 shrink-0"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label="Toggle mobile menu"
             >
-              {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+              {isMobileMenuOpen ? <X size={19} /> : <Menu size={19} />}
             </button>
 
             {/* Brand Logo */}
             <div
-              className="cursor-pointer select-none flex items-center gap-2.5 group"
+              className="cursor-pointer select-none flex items-center gap-1.5 sm:gap-2.5 group shrink-0"
               onClick={handleLogoClick}
             >
-              <div className="w-9 h-9 rounded-xl bg-slate-950 text-white flex items-center justify-center font-black text-base shadow-sm group-hover:bg-black transition-colors">
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-slate-950 text-white flex items-center justify-center font-black text-sm sm:text-base shadow-sm group-hover:bg-black transition-colors shrink-0">
                 E
               </div>
               <div className="flex flex-col leading-none">
-                <span className="font-display text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+                <span className="font-display text-base xs:text-lg sm:text-2xl font-black text-slate-950 tracking-tight hidden xs:inline sm:inline">
                   Ecommerce
                 </span>
                 <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest mt-0.5 hidden sm:block">
@@ -220,12 +220,12 @@ const Navigation: React.FC = () => {
           </div>
 
           {/* Right: Nav Actions with Icons (My Orders, Cart, Profile/Sign In) - Unified Style & Height */}
-          <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+          <div className="flex items-center gap-1 sm:gap-2.5 shrink-0">
             
             {/* Orders Button */}
             <button
               type="button"
-              className="h-10 px-3.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-slate-800 hover:text-slate-950 text-xs font-bold inline-flex items-center gap-2 transition-all cursor-pointer shadow-2xs active:scale-[0.98]"
+              className="h-9 sm:h-10 px-2.5 sm:px-3.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-slate-800 hover:text-slate-950 text-xs font-bold inline-flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-2xs active:scale-[0.98] shrink-0"
               onClick={() => handleNavClick('orders')}
               title="My Orders & Returns"
             >
@@ -236,11 +236,11 @@ const Navigation: React.FC = () => {
             {/* Shopping Cart Button */}
             <button
               type="button"
-              className="h-10 px-3.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-slate-800 hover:text-slate-950 text-xs font-bold inline-flex items-center gap-2 transition-all cursor-pointer shadow-2xs active:scale-[0.98] relative"
+              className="h-9 sm:h-10 px-2.5 sm:px-3.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-slate-800 hover:text-slate-950 text-xs font-bold inline-flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-2xs active:scale-[0.98] relative shrink-0"
               onClick={() => handleNavClick('checkout')}
               title="Shopping Cart"
             >
-              <div className="relative flex items-center">
+              <div className="relative flex items-center justify-center">
                 <ShoppingCart size={16} className="text-slate-700 shrink-0" />
                 {isCartLoading ? (
                   <span className="absolute -top-2 -right-2.5 bg-emerald-500 text-white text-[9px] w-3.5 h-3.5 rounded-full flex items-center justify-center">
@@ -259,7 +259,7 @@ const Navigation: React.FC = () => {
             {curUser?.isAdmin && (
               <button
                 type="button"
-                className="hidden lg:inline-flex h-10 px-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-slate-800 hover:text-slate-950 text-xs font-bold items-center gap-1.5 transition-all cursor-pointer shadow-2xs"
+                className="hidden lg:inline-flex h-10 px-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-slate-800 hover:text-slate-950 text-xs font-bold items-center gap-1.5 transition-all cursor-pointer shadow-2xs shrink-0"
                 onClick={() => { window.location.href = 'http://localhost:5174/admin'; }}
                 title="Admin Dashboard"
               >
@@ -270,19 +270,19 @@ const Navigation: React.FC = () => {
 
             {/* Account / User Section */}
             {isAuthLoading ? (
-              <div className="h-10 w-10 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-center text-slate-400">
+              <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-center text-slate-400 shrink-0">
                 <Loader2 size={16} className="animate-spin" />
               </div>
             ) : curUser ? (
-              <div className="relative" ref={userDropdownRef}>
+              <div className="relative shrink-0" ref={userDropdownRef}>
                 <button
                   type="button"
                   onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
-                  className="h-10 px-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-slate-800 hover:text-slate-950 text-xs font-bold inline-flex items-center gap-2 transition-all cursor-pointer shadow-2xs active:scale-[0.98] select-none"
+                  className="h-9 sm:h-10 px-2 sm:px-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-slate-800 hover:text-slate-950 text-xs font-bold inline-flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-2xs active:scale-[0.98] select-none shrink-0"
                   aria-expanded={isUserDropdownOpen}
                   aria-haspopup="true"
                 >
-                  <div className="w-6 h-6 rounded-lg bg-slate-900 text-white flex items-center justify-center text-[10px] font-bold shrink-0 overflow-hidden">
+                  <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-lg bg-slate-900 text-white flex items-center justify-center text-[10px] font-bold shrink-0 overflow-hidden">
                     {curUser.avatar ? (
                       <img src={curUser.avatar} alt="Avatar" className="w-full h-full object-cover" />
                     ) : (
@@ -292,7 +292,7 @@ const Navigation: React.FC = () => {
                   <span className="truncate max-w-[85px] hidden sm:inline">
                     {curUser.name?.split(' ')[0] || 'Profile'}
                   </span>
-                  <ChevronDown size={14} className={`text-slate-400 transition-transform duration-150 ${isUserDropdownOpen ? 'rotate-180 text-slate-900' : ''}`} />
+                  <ChevronDown size={13} className={`text-slate-400 transition-transform duration-150 ${isUserDropdownOpen ? 'rotate-180 text-slate-900' : ''}`} />
                 </button>
 
                 {/* Dropdown Menu with Backdrop */}
@@ -351,11 +351,11 @@ const Navigation: React.FC = () => {
             ) : (
               <button
                 type="button"
-                className="h-10 px-4 rounded-xl border border-slate-950 bg-slate-950 hover:bg-black text-white text-xs font-bold inline-flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs active:scale-[0.98]"
+                className="h-10 px-2.5 sm:px-4 rounded-xl border border-slate-950 bg-slate-950 hover:bg-black text-white text-xs font-bold inline-flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs active:scale-[0.98]"
                 onClick={() => setCurPage('login')}
               >
-                <User size={15} />
-                <span>Sign In</span>
+                <User size={15} className="shrink-0" />
+                <span className="hidden xs:inline sm:inline">Sign In</span>
               </button>
             )}
           </div>
@@ -363,7 +363,7 @@ const Navigation: React.FC = () => {
 
         {/* Mobile Search & Menu Drawer */}
         {isMobileMenuOpen && (
-          <div className="lg:hidden border-t border-slate-200 bg-white shadow-xl absolute w-full animate-slideDown z-50">
+          <div className="lg:hidden border-t border-slate-200 bg-white shadow-xl absolute top-full left-0 right-0 w-full animate-slideDown z-50">
             <div className="p-4 flex flex-col gap-3">
               {/* Search Form */}
               <form
