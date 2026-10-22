@@ -95,8 +95,7 @@ const userSchema = new mongoose.Schema(
             type: String,
             required: true,
             unique: true,
-            immutable: true,
-            index: true
+            immutable: true
         },
 
         name: {
@@ -124,8 +123,7 @@ const userSchema = new mongoose.Schema(
             required: true,
             unique: true,
             lowercase: true,
-            trim: true,
-            index: true
+            trim: true
         },
 
         photoURL: {
@@ -251,21 +249,5 @@ const userSchema = new mongoose.Schema(
         versionKey: false
     }
 );
-
-/* ===========================================================
-   Indexes
-=========================================================== */
-
-userSchema.index({
-    uid: 1
-});
-
-userSchema.index({
-    email: 1
-});
-
-userSchema.index({
-    isDeleted: 1
-});
 
 export const User = mongoose.model("User", userSchema);

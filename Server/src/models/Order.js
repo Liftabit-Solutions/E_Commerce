@@ -244,8 +244,7 @@ const orderSchema = new mongoose.Schema(
         orderNumber: {
             type: String,
             unique: true,
-            required: true,
-            index: true
+            required: true
         },
 
         customer: {
@@ -367,14 +366,6 @@ const orderSchema = new mongoose.Schema(
 orderSchema.index({
     customer: 1,
     createdAt: -1
-});
-
-orderSchema.index({
-    orderNumber: 1
-});
-
-orderSchema.index({
-    status: 1
 });
 
 export const Order = mongoose.model(

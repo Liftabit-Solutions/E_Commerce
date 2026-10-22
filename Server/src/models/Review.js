@@ -149,11 +149,6 @@ reviewSchema.index({
     createdAt: -1,
 });
 
-reviewSchema.index({
-    user: 1,
-    product: 1,
-});
-
 // Prevent one user from reviewing the same product more than once
 reviewSchema.index(
     {
