@@ -553,6 +553,13 @@ export const updateProfile = async (req, res) => {
 
 export const getActiveBanners = async (req, res) => {
     try {
+        if (mongoose.connection.readyState !== 1) {
+            return res.status(200).json({
+                success: true,
+                total: 0,
+                banners: []
+            });
+        }
 
         const now = new Date();
 
@@ -600,15 +607,15 @@ export const getActiveBanners = async (req, res) => {
 
     } catch (error) {
 
-        console.error(error);
+        console.warn("[BANNERS WARNING] Could not fetch banners from DB, returning fallback:", error.message);
 
-        return res.status(500).json({
+        return res.status(200).json({
 
-            success: false,
+            success: true,
 
-            message: "Failed to fetch homepage banners.",
+            total: 0,
 
-            error: error.message
+            banners: []
 
         });
 

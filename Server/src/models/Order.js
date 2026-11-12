@@ -159,7 +159,9 @@ const paymentSchema = new mongoose.Schema(
             type: String,
             enum: [
                 "COD",
-                "Razorpay"
+                "Razorpay",
+                "UPI",
+                "Card"
             ],
             required: true
         },

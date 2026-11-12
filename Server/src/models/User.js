@@ -212,7 +212,7 @@ const userSchema = new mongoose.Schema(
         role: {
             type: String,
             enum: [
-                "Customer",
+                "customer",
                 "Admin"
             ],
             default: "Customer"
@@ -241,6 +241,11 @@ const userSchema = new mongoose.Schema(
         resetOtpExpires: {
             type: Date,
             default: null
+        },
+
+        resetOtpAttempts: {
+            type: Number,
+            default: 0
         }
 
     },

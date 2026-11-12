@@ -1,6 +1,7 @@
 import express from 'express';
 import { getStories, createStory, deleteStory } from '../controllers/storyController.js';
 import { getAuth } from "firebase-admin/auth";
+import verifyToken from "../middlewares/auth.js";
 
 const optionalAuth = async (req, res, next) => {
     try {
@@ -23,6 +24,6 @@ const storyRouter = express.Router();
 storyRouter.get('/', getStories);
 storyRouter.post('/', optionalAuth, createStory);
 storyRouter.post('/submit', optionalAuth, createStory);
-storyRouter.delete('/:id', deleteStory);
+storyRouter.delete('/:id', verifyToken, deleteStory);
 
 export default storyRouter;

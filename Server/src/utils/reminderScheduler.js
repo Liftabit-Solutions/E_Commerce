@@ -1,4 +1,5 @@
 import cron from "node-cron";
+import mongoose from "mongoose";
 import { Lead } from "../models/Lead.js";
 import { User } from "../models/User.js";
 import { createTransporter } from "./email.js";
@@ -14,6 +15,9 @@ export const startReminderScheduler = () => {
     cron.schedule("* * * * *", async () => {
 
         try {
+            if (mongoose.connection.readyState !== 1) {
+                return;
+            }
 
             const now = new Date();
 

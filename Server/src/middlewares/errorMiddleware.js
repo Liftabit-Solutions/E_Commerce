@@ -1,22 +1,14 @@
-// import ApiError from '../utils/ApiError.js';
+export const errorMiddleware = (err, req, res, next) => {
+  const statusCode = err.statusCode || (res.statusCode && res.statusCode !== 200 ? res.statusCode : 500);
+  const isProduction = process.env.NODE_ENV === "production" || !!process.env.VERCEL;
 
-// export const errorMiddleware = (err, req, res, next) => {
-//   let error = err;
+  console.error(`[ERROR] ${req.method} ${req.originalUrl}:`, err.message);
 
-//   // If error is not a custom ApiError instance, convert it
-//   if (!(error instanceof ApiError)) {
-//     const statusCode = error.statusCode || 500;
-//     const message = error.message || 'Internal Server Error';
-//     error = new ApiError(statusCode, message, [], err.stack);
-//   }
+  res.status(statusCode).json({
+    success: false,
+    message: err.message || "Internal Server Error",
+    ...(isProduction ? {} : { stack: err.stack }),
+  });
+};
 
-//   const response = {
-//     success: false,
-//     statusCode: error.statusCode,
-//     message: error.message,
-//     errors: error.errors,
-//     ...(process.env.NODE_ENV === 'development' && { stack: error.stack })
-//   };
-
-//   res.status(error.statusCode).json(response);
-// };
+export default errorMiddleware;

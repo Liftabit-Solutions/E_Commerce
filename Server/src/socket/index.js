@@ -86,12 +86,11 @@ export const initSocket = (httpServer) => {
         if (
           cleanOrigin.startsWith("http://localhost:") ||
           cleanOrigin.startsWith("http://127.0.0.1:") ||
-          allowedOrigins.includes(cleanOrigin) ||
-          allowedOrigins.length === 0
+          allowedOrigins.includes(cleanOrigin)
         ) {
           return callback(null, cleanOrigin);
         }
-        return callback(null, cleanOrigin);
+        return callback(new Error("Socket CORS origin not allowed"), false);
       },
       credentials: true,
     },
@@ -319,7 +318,6 @@ export const emitToAdmin = (event, data) => {
   );
   if (io) {
     io.to("admin").emit(event, data);
-    io.emit(event, data);
   }
 };
 

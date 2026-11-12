@@ -1,0 +1,724 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Manrope:wght@200..800&family=DM+Mono:wght@400;500&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+  /* FORMA Minimal E-Commerce Editorial Palette */
+  --color-paper: #f7f6f2;
+  --color-paper-2: #eeede7;
+  --color-paper-3: #e5e4dc;
+  --color-ink: #262824;
+  --color-ink-light: #3d403a;
+  --color-muted: #777971;
+  --color-muted-light: #9a9c94;
+  --color-line: #dfdfd8;
+  --color-line-dark: #c8c8bf;
+  --color-olive: #777d62;
+  --color-olive-dark: #5e644b;
+  --color-olive-light: #e8eae1;
+
+  /* Classic Semantic Aliases mapped to FORMA tokens */
+  --color-primary: #262824;
+  --color-primary-hover: #141513;
+  --color-primary-deep: #0e0f0d;
+  --color-primary-light: #777971;
+  --color-primary-xlight: #eeede7;
+  --color-primary-soft: #f7f6f2;
+
+  --color-accent: #777d62;
+  --color-accent-hover: #5e644b;
+  --color-accent-light: #e8eae1;
+
+  --color-blk: #262824;
+  --color-mid: #52544c;
+  --color-mut: #777971;
+  --color-fnt: #a1a39b;
+  --color-bdr: #dfdfd8;
+  --color-bdrl: #eaeae4;
+  --color-sur: #f7f6f2;
+  --color-wht: #ffffff;
+
+  --color-background: #f7f6f2;
+  --color-surface: #ffffff;
+  --color-surface-secondary: #eeede7;
+  --color-surface-tertiary: #e5e4dc;
+  --color-surface-dark: #262824;
+  --color-border: #dfdfd8;
+  --color-border-dark: #262824;
+  --color-text-primary: #262824;
+  --color-text-secondary: #777971;
+  --color-text-tertiary: #9a9c94;
+  --color-text-muted-dark: #eeede7;
+
+  /* Functional Ecommerce Semantics (Quiet & Editorial) */
+  --color-green: #40684f;
+  --color-green-bg: #edf3ee;
+  --color-green-bdr: #c7dac9;
+
+  --color-red: #a83d3b;
+  --color-red-bg: #f9eded;
+  --color-red-bdr: #e8c6c5;
+
+  --color-amber: #996222;
+  --color-amber-bg: #fbf4ec;
+  --color-amber-bdr: #ebd3be;
+
+  --color-blue: #3d5873;
+  --color-blue-bg: #edf3f7;
+  --color-blue-bdr: #c5d8e7;
+
+  --color-gold: #b38234;
+
+  /* Typography System: Display = Manrope, UI = DM Sans */
+  --font-manrope: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-heading: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-dmsans: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-body: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-sans: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-price: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "DM Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Crisp Quiet Elevations */
+  --shadow-premium-sm: 0 1px 2px rgba(38, 40, 36, 0.04);
+  --shadow-premium-md: 0 4px 12px rgba(38, 40, 36, 0.06);
+  --shadow-premium-lg: 0 10px 24px rgba(38, 40, 36, 0.08);
+  --shadow-premium-xl: 0 20px 40px rgba(38, 40, 36, 0.12);
+
+  /* FORMA Editorial Radii: Minimal, Quiet, Crisp */
+  --radius-r-sm: 2px;
+  --radius-r-md: 3px;
+  --radius-r-lg: 4px;
+  --radius-r-xl: 6px;
+}
+
+/* Base resets & typography */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    font-family: var(--font-body);
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    line-height: 1.55;
+    letter-spacing: -0.01em;
+  }
+
+  /* Headings: Manrope */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    letter-spacing: -0.025em;
+    color: var(--color-ink);
+    font-weight: 600;
+  }
+
+  /* Body elements inherit DM Sans */
+  p, span, div, a, li, blockquote {
+    font-family: inherit;
+  }
+
+  nav, button, input, select, textarea, label {
+    font-family: var(--font-body);
+  }
+
+  table, thead, tbody, tfoot, tr, th, td {
+    font-family: var(--font-body);
+  }
+
+  ::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background-color: var(--color-paper);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--color-line);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-muted);
+  }
+
+  :focus-visible {
+    outline: 1.5px solid var(--color-ink);
+    outline-offset: 2px;
+  }
+}
+
+/* Standardized Component Utilities */
+@layer components {
+
+  /* ── Card System (FORMA Quiet Editorial Surfaces) ── */
+  .card {
+    background-color: #ffffff;
+    border: 1px solid var(--color-line);
+    border-radius: 2px;
+    box-shadow: 0 1px 2px rgba(38, 40, 36, 0.03);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .card:hover {
+    border-color: var(--color-line-dark);
+    box-shadow: 0 4px 12px rgba(38, 40, 36, 0.05);
+  }
+
+  .card-inner {
+    background-color: var(--color-paper-2);
+    border: 1px solid var(--color-line);
+    border-radius: 2px;
+  }
+
+  /* ── Button System (FORMA Editorial, High Contrast, 44px Touch Targets) ── */
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background-color: var(--color-ink);
+    color: var(--color-paper);
+    border-radius: 2px;
+    padding: 0.625rem 1.25rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    min-height: 42px;
+    cursor: pointer;
+    transition: background-color 0.15s ease, transform 0.1s ease;
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    background-color: #0e0f0d;
+  }
+
+  .btn-primary:active:not(:disabled) {
+    transform: scale(0.99);
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background-color: transparent;
+    color: var(--color-ink);
+    border: 1px solid var(--color-ink);
+    border-radius: 2px;
+    padding: 0.625rem 1.25rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    min-height: 42px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .btn-secondary:hover:not(:disabled) {
+    background-color: var(--color-ink);
+    color: var(--color-paper);
+  }
+
+  .btn-secondary:active:not(:disabled) {
+    transform: scale(0.99);
+  }
+
+  .btn-secondary:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color: var(--color-muted);
+    border-radius: 2px;
+    padding: 0.5rem 0.875rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    min-height: 40px;
+    cursor: pointer;
+    transition: color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .btn-ghost:hover {
+    color: var(--color-ink);
+    background-color: var(--color-paper-2);
+  }
+
+  .btn-destructive {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background-color: var(--color-red-bg);
+    color: var(--color-red);
+    border: 1px solid var(--color-red-bdr);
+    border-radius: 2px;
+    padding: 0.625rem 1.25rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    min-height: 42px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .btn-destructive:hover {
+    background-color: #f7dede;
+    border-color: #dfadad;
+  }
+
+  .btn-primary-lg {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625rem;
+    background-color: var(--color-ink);
+    color: var(--color-paper);
+    border-radius: 2px;
+    padding: 0.875rem 1.75rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    min-height: 48px;
+    cursor: pointer;
+    transition: background-color 0.15s ease, transform 0.1s ease;
+  }
+
+  .btn-primary-lg:hover:not(:disabled) {
+    background-color: #0e0f0d;
+  }
+
+  /* ── Input System (FORMA Quiet 1px Lines) ── */
+  .input-field {
+    width: 100%;
+    border: 1px solid var(--color-line);
+    border-radius: 2px;
+    padding: 0.625rem 0.875rem;
+    font-size: 0.875rem;
+    color: var(--color-ink);
+    background-color: #ffffff;
+    min-height: 42px;
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+
+  .input-field:focus {
+    border-color: var(--color-ink);
+  }
+
+  .input-field:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: var(--color-paper-2);
+  }
+
+  .textarea-field {
+    width: 100%;
+    border: 1px solid var(--color-line);
+    border-radius: 2px;
+    padding: 0.625rem 0.875rem;
+    font-size: 0.875rem;
+    color: var(--color-ink);
+    background-color: #ffffff;
+    outline: none;
+    transition: border-color 0.15s ease;
+    resize: vertical;
+  }
+
+  .textarea-field:focus {
+    border-color: var(--color-ink);
+  }
+
+  .select-field {
+    width: 100%;
+    border: 1px solid var(--color-line);
+    border-radius: 2px;
+    padding: 0.625rem 0.875rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--color-ink);
+    background-color: #ffffff;
+    outline: none;
+    min-height: 42px;
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+  }
+
+  .select-field:focus {
+    border-color: var(--color-ink);
+  }
+
+  /* ── Custom Styled Select Dropdown (Precision Aligned & Styled Option Items) ── */
+  select {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.75' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.75rem center;
+    background-repeat: no-repeat;
+    background-size: 1.1em 1.1em;
+    padding-right: 2.25rem !important;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  select:focus {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%230f172a' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.75' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  }
+
+  select:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  select option {
+    background-color: #FFFFFF;
+    color: #0F172A;
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  select option:checked,
+  select option:hover,
+  select option:focus {
+    background-color: #F1F5F9;
+    color: #020617;
+    font-weight: 700;
+  }
+
+  select optgroup {
+    font-weight: 700;
+    color: #64748B;
+    background-color: #F8FAFC;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 8px 12px;
+  }
+
+  /* ── Badge System (FORMA Quiet Editorial Tags) ── */
+  .badge-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.125rem 0.5rem;
+    border-radius: 2px;
+    border-width: 1px;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+  }
+
+  .badge-status-neutral {
+    background-color: var(--color-paper-2);
+    color: var(--color-ink);
+    border-color: var(--color-line);
+  }
+
+  .badge-status-success {
+    background-color: var(--color-green-bg);
+    color: var(--color-green);
+    border-color: var(--color-green-bdr);
+  }
+
+  .badge-status-warning {
+    background-color: var(--color-amber-bg);
+    color: var(--color-amber);
+    border-color: var(--color-amber-bdr);
+  }
+
+  .badge-status-danger {
+    background-color: var(--color-red-bg);
+    color: var(--color-red);
+    border-color: var(--color-red-bdr);
+  }
+
+  .badge-status-info {
+    background-color: var(--color-blue-bg);
+    color: var(--color-blue);
+    border-color: var(--color-blue-bdr);
+  }
+
+  .badge-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.125rem 0.375rem;
+    border-radius: 2px;
+    font-size: 0.625rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  /* ── Form Labels & Helpers ── */
+  .form-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-ink);
+    margin-bottom: 0.375rem;
+    display: block;
+    letter-spacing: 0.01em;
+  }
+
+  .form-helper {
+    font-size: 0.6875rem;
+    color: var(--color-muted);
+    margin-top: 0.25rem;
+    display: block;
+  }
+
+  .form-error {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    color: var(--color-red);
+    margin-top: 0.25rem;
+    display: block;
+  }
+
+  /* ── Section & Page Typography ── */
+  .section-label {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--color-muted);
+    display: block;
+    margin-bottom: 0.375rem;
+  }
+
+  .section-title {
+    font-family: var(--font-heading) !important;
+    font-size: 1.375rem;
+    font-weight: 600;
+    color: var(--color-ink);
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+  }
+
+  .page-title {
+    font-family: var(--font-heading) !important;
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--color-ink);
+    letter-spacing: -0.025em;
+  }
+
+  /* ── Explicit Typography Utility Classes ── */
+  .font-manrope,
+  .font-heading,
+  .font-display {
+    font-family: var(--font-manrope) !important;
+    letter-spacing: -0.025em;
+  }
+
+  .font-dmsans,
+  .font-body,
+  .font-sans {
+    font-family: var(--font-body) !important;
+    letter-spacing: -0.01em;
+  }
+
+  .font-price {
+    font-family: var(--font-manrope) !important;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+  }
+
+  .font-stat,
+  .font-number {
+    font-family: var(--font-manrope) !important;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.025em;
+  }
+
+  .font-mono {
+    font-family: var(--font-mono) !important;
+  }
+
+  /* ── Empty State ── */
+  .empty-state {
+    @apply text-center py-16 px-6;
+    animation: fadeIn 0.2s ease-out forwards;
+  }
+
+  .empty-state-icon {
+    @apply w-14 h-14 rounded-full bg-slate-100 border border-slate-200 
+           flex items-center justify-center mx-auto mb-4 text-slate-400;
+  }
+
+  /* ── Divider ── */
+  .divider {
+    @apply border-t border-bdr;
+  }
+}
+
+/* Animations */
+@keyframes tickerLoop {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes toastSlideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(12px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideRight {
+  from { opacity: 0; transform: translateX(-12px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideLeft {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes checkmarkDraw {
+  from { stroke-dashoffset: 100; }
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes pulseRing {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(15, 23, 42, 0.2); }
+  70% { transform: scale(1); box-shadow: 0 0 0 14px rgba(15, 23, 42, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(15, 23, 42, 0); }
+}
+
+@keyframes confettiFall {
+  0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(120px) rotate(360deg); opacity: 0; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.animate-tickerLoop {
+  animation: tickerLoop 30s linear infinite;
+}
+
+.animate-toastSlideUp {
+  animation: toastSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-out forwards;
+}
+
+.animate-scaleIn {
+  animation: scaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slideRight {
+  animation: slideRight 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slideLeft {
+  animation: slideLeft 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-pulseRing {
+  animation: pulseRing 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+}
+
+.animate-checkmarkDraw {
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: checkmarkDraw 0.5s 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.shimmer-bg {
+  background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* ── Order Processing Stage Animations ── */
+@keyframes truckDrive {
+  0% { transform: translateX(-6px) translateY(0); }
+  25% { transform: translateX(2px) translateY(-1.5px); }
+  50% { transform: translateX(8px) translateY(0); }
+  75% { transform: translateX(2px) translateY(-1px); }
+  100% { transform: translateX(-6px) translateY(0); }
+}
+
+@keyframes roadDash {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-48px); }
+}
+
+@keyframes boxSeal {
+  0% { transform: scale(0.85) translateY(-8px); opacity: 0; }
+  60% { transform: scale(1.05) translateY(2px); opacity: 1; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+@keyframes haloSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.animate-truckDrive {
+  animation: truckDrive 1.8s ease-in-out infinite;
+}
+
+.animate-roadDash {
+  animation: roadDash 0.8s linear infinite;
+}
+
+.animate-boxSeal {
+  animation: boxSeal 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-haloSpin {
+  animation: haloSpin 8s linear infinite;
+}
+
+/* ── Accessibility: Reduced Motion Support ── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

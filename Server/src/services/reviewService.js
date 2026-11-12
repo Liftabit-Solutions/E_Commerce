@@ -52,12 +52,12 @@ export const deleteReviewService = async (req) => {
 
     // 1. Check if reviewId belongs to a Story
     const story = await Story.findOne({ _id: reviewId, isDeleted: false });
-    if (story) {
-        const isOwner = (story.user && story.user.toString() === user._id.toString()) ||
-                        (story.author && story.author.toLowerCase() === user.name?.toLowerCase()) ||
-                        (story.author && story.author.toLowerCase() === `${user.firstName} ${user.lastName}`.trim().toLowerCase());
+    const isAdmin = Boolean(user.isAdmin && user.role === "Admin");
 
-        if (!isOwner) {
+    if (story) {
+        const isOwner = Boolean(story.user && story.user.toString() === user._id.toString());
+
+        if (!isOwner && !isAdmin) {
             throw new Error("You are not authorized to delete this story.");
         }
 
@@ -73,7 +73,8 @@ export const deleteReviewService = async (req) => {
         throw new Error("Review or Story not found.");
     }
 
-    if (review.user && review.user.toString() !== user._id.toString()) {
+    const isReviewOwner = Boolean(review.user && review.user.toString() === user._id.toString());
+    if (!isReviewOwner && !isAdmin) {
         throw new Error("You are not authorized to delete this review.");
     }
 

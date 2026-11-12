@@ -26,7 +26,7 @@ const productSchema = new mongoose.Schema(
             type: String,
             required: true,
             trim: true,
-            default: "Clean Everyday",
+            default: "FORMA",
         },
 
         category: {

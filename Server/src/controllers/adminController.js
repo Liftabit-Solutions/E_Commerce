@@ -29,11 +29,13 @@ export const adminLogin = async (req, res) => {
             }
         );
 
+        const isProduction = process.env.NODE_ENV === "production" || !!process.env.VERCEL;
         res.cookie("session", sessionCookie, {
             httpOnly: true,
-            secure: false, // true in production with HTTPS
-            sameSite: "lax",
-            maxAge: 1000 * 60 * 60 * 24 * 5
+            secure: isProduction,
+            sameSite: isProduction ? "none" : "lax",
+            maxAge: 1000 * 60 * 60 * 24 * 5,
+            path: "/"
         });
 
         return res.status(200).json({
@@ -311,6 +313,8 @@ export const getDashboard = async (req, res) => {
 // Order Registry
 
 
+const escapeRegex = (str) => String(str || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 export const getOrderRegistry = async (req, res) => {
     try {
 
@@ -321,6 +325,9 @@ export const getOrderRegistry = async (req, res) => {
             paymentStatus,
             search
         } = req.query;
+
+        const pageNum = Math.max(1, Number(page) || 1);
+        const limitNum = Math.min(Math.max(1, Number(limit) || 10), 100);
 
         const filter = {
             isDeleted: false
@@ -334,29 +341,30 @@ export const getOrderRegistry = async (req, res) => {
             filter["payment.status"] = paymentStatus;
         }
 
-        if (search) {
+        if (search && search.trim()) {
+            const escapedSearch = escapeRegex(search.trim());
             filter.$or = [
                 {
                     orderNumber: {
-                        $regex: search,
+                        $regex: escapedSearch,
                         $options: "i"
                     }
                 },
                 {
                     "shippingAddress.fullName": {
-                        $regex: search,
+                        $regex: escapedSearch,
                         $options: "i"
                     }
                 },
                 {
                     "shippingAddress.phone": {
-                        $regex: search,
+                        $regex: escapedSearch,
                         $options: "i"
                     }
                 },
                 {
                     "shippingAddress.phoneNumber": {
-                        $regex: search,
+                        $regex: escapedSearch,
                         $options: "i"
                     }
                 }
@@ -377,8 +385,8 @@ export const getOrderRegistry = async (req, res) => {
             .sort({
                 createdAt: -1
             })
-            .skip((page - 1) * limit)
-            .limit(Number(limit));
+            .skip((pageNum - 1) * limitNum)
+            .limit(limitNum);
 
         const registry = orders.map(order => {
             const custAddr = order.customer?.address || (Array.isArray(order.customer?.addresses) && order.customer.addresses[0]) || {};

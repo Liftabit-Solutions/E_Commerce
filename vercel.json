@@ -6,7 +6,7 @@
       "use": "@vercel/node"
     },
     {
-      "src": "customer-frontend/package.json",
+      "src": "customer/package.json",
       "use": "@vercel/static-build",
       "config": {
         "distDir": "dist"
@@ -23,7 +23,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "customer-frontend/index.html"
+      "dest": "customer/index.html"
     }
   ]
 }

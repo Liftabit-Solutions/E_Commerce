@@ -1,6 +1,5 @@
+import "./src/config/env.js";
 import express from "express";
-import dotenv from "dotenv";
-dotenv.config();
 
 import cors from "cors";
 import helmet from "helmet";
@@ -24,6 +23,10 @@ import cartRouter from "./src/routes/cartRoutes.js";
 import leadRouter from "./src/routes/leadRoutes.js";
 import storyRouter from "./src/routes/storyRoutes.js";
 import { startReminderScheduler } from "./src/utils/reminderScheduler.js";
+import { getStoreProfile, updateStoreProfile } from "./src/utils/storeProfile.js";
+import verifyToken from "./src/middlewares/auth.js";
+import verifyAdmin from "./src/middlewares/admin.js";
+import errorMiddleware from "./src/middlewares/errorMiddleware.js";
 
 // Express 5 req.query compatibility fix:
 // Express 5 defines req.query with only a getter on express.request.
@@ -92,16 +95,15 @@ app.use(
       if (!origin) return callback(null, true);
       const cleanOrigin = origin.replace(/\/+$/, "");
       if (
-        cleanOrigin.endsWith(".liftabit.in") ||
-        cleanOrigin.endsWith(".vercel.app") ||
         cleanOrigin.startsWith("http://localhost:") ||
         cleanOrigin.startsWith("http://127.0.0.1:") ||
-        allowedOrigins.includes(cleanOrigin) ||
-        allowedOrigins.length === 0
+        cleanOrigin.endsWith(".liftabit.in") ||
+        cleanOrigin.endsWith(".vercel.app") ||
+        allowedOrigins.includes(cleanOrigin)
       ) {
         return callback(null, true);
       }
-      return callback(null, true);
+      return callback(null, false);
     },
     credentials: true,
   })
@@ -124,8 +126,8 @@ app.use(
 // =========================
 // Body Parser (must run before sanitizers so req.body is parsed)
 // =========================
-app.use(express.json({ limit: "100mb" }));
-app.use(express.urlencoded({ extended: true, limit: "100mb" }));
+app.use(express.json({ limit: "5mb" }));
+app.use(express.urlencoded({ extended: true, limit: "5mb" }));
 
 // =========================
 // Sanitization Middleware
@@ -153,6 +155,21 @@ app.get("/", (req, res) => {
     message: "Backend API is running 🚀",
   });
 });
+
+// Store Profile endpoints (Branding, Logo, Color, Address, Delivery rules)
+app.get(["/api/store-profile", "/store-profile"], (req, res) => {
+  res.status(200).json({ success: true, storeProfile: getStoreProfile() });
+});
+
+app.put(
+  ["/api/store-profile", "/store-profile", "/api/admin/store-profile", "/admin/store-profile"],
+  verifyToken,
+  verifyAdmin,
+  (req, res) => {
+    const updated = updateStoreProfile(req.body);
+    res.status(200).json({ success: true, message: "Store profile updated successfully", storeProfile: updated });
+  }
+);
 
 try {
   if (getApps().length > 0) {
@@ -212,5 +229,10 @@ app.use((req, res) => {
     message: "Route not found",
   });
 });
+
+// =========================
+// Global Error Handler
+// =========================
+app.use(errorMiddleware);
 
 export default app;

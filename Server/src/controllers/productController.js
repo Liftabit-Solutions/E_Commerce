@@ -191,6 +191,8 @@ export const addProduct = async (req, res) => {
 
 
 
+const escapeRegex = (str) => String(str || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 //get all products
 
 export const getAllProducts = async (req, res) => {
@@ -205,8 +207,8 @@ export const getAllProducts = async (req, res) => {
             sort = "newest"
         } = req.query;
 
-        page = Number(page);
-        limit = Number(limit);
+        page = Math.max(1, Number(page) || 1);
+        limit = Math.min(Math.max(1, Number(limit) || 12), 1000);
 
         // ===========================
         // Build Filter
@@ -214,24 +216,28 @@ export const getAllProducts = async (req, res) => {
 
         const filter = {
             isDeleted: false,
-            
         };
+
+        if (req.query.isActive !== undefined) {
+            filter.isActive = req.query.isActive === "true";
+        }
 
         if (category && category !== "All") {
             filter.category = category;
         }
 
-        if (search) {
+        if (search && search.trim()) {
+            const escapedSearch = escapeRegex(search.trim());
             filter.$or = [
                 {
                     title: {
-                        $regex: search,
+                        $regex: escapedSearch,
                         $options: "i"
                     }
                 },
                 {
                     tags: {
-                        $regex: search,
+                        $regex: escapedSearch,
                         $options: "i"
                     }
                 }

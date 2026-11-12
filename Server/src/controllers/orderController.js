@@ -5,8 +5,18 @@ import { Cart } from "../models/Cart.js";
 import { Order } from "../models/Order.js";
 import { Product } from "../models/Product.js";
 import { User } from "../models/User.js";
-import { placeCODOrderService, cancelOrderService, returnOrderService } from "../services/orderService.js";
+import {
+    placeCODOrderService,
+    cancelOrderService,
+    returnOrderService,
+    createRazorpayUpiOrderService,
+    verifyRazorpayUpiPaymentService
+} from "../services/orderService.js";
 import { emitToAdmin, emitToUser, emitToAll } from "../socket/index.js";
+import { getInvoiceEmailTemplate } from "../utils/emailTemplates.js";
+import { sendDeliveryStatusEmail, sendPaymentStatusEmail } from "../utils/emailService.js";
+import { getStoreProfile } from "../utils/storeProfile.js";
+import { sendOrderConfirmationWhatsApp } from "../utils/whatsappService.js";
 
 
 
@@ -38,7 +48,6 @@ export const placeCODOrder = async (req, res) => {
         // Real-time synchronization
         const customerId = order.customer?._id || order.customer;
         emitToAdmin("order:created", { order });
-        emitToAll("order:created", { order });
         if (customerId) {
             emitToUser(customerId, "order:created", { order });
             emitToUser(customerId, "cart:updated", { items: [], totalItems: 0, grandTotal: 0 });
@@ -57,6 +66,18 @@ export const placeCODOrder = async (req, res) => {
             }
         }
 
+        // Send WhatsApp confirmation with Order ID, Amount, and Product details
+        // Awaiting ensures the message is sent before concluding the order response
+        try {
+            await sendOrderConfirmationWhatsApp({
+                order,
+                user: req.user,
+                recipientPhone: req.body?.phoneNumber || req.body?.phone
+            });
+        } catch (waErr) {
+            console.error("[WHATSAPP] Failed to send order confirmation:", waErr.message);
+        }
+
         return res.status(201).json({
 
             success: true,
@@ -73,9 +94,20 @@ export const placeCODOrder = async (req, res) => {
 
         console.error("Place COD Order Error:", error);
 
-        return res.status(500).json({
+        if (error.productId) {
+            Product.findById(error.productId).then((p) => {
+                if (p) {
+                    emitToAll("product:updated", { product: p });
+                    emitToAll("inventory:updated", { productId: p._id, stock: p.stock });
+                }
+            }).catch(() => {});
+        }
+
+        return res.status(error.statusCode || 400).json({
 
             success: false,
+
+            isOutOfStock: Boolean(error.isOutOfStock),
 
             message: error.message || "Failed to place order."
 
@@ -83,6 +115,91 @@ export const placeCODOrder = async (req, res) => {
 
     }
 
+};
+
+export const createRazorpayUpiOrder = async (req, res) => {
+    try {
+        const orderData = await createRazorpayUpiOrderService(req);
+        return res.status(200).json({
+            success: true,
+            ...orderData
+        });
+    } catch (error) {
+        console.error("Create Razorpay UPI Order Error:", error);
+        return res.status(error.statusCode || 400).json({
+            success: false,
+            message: error.message || "Failed to initiate UPI payment.",
+            isOutOfStock: Boolean(error.isOutOfStock)
+        });
+    }
+};
+
+export const verifyRazorpayUpiPayment = async (req, res) => {
+    try {
+        const order = await verifyRazorpayUpiPaymentService(req);
+
+        const response = {
+            orderIdReference: order.orderNumber,
+            grandTotalPaid: order.grandTotal,
+            paymentMode: order.payment.method,
+            transactionId: order.payment.transactionId,
+            expectedArrival: `${order.delivery.estimatedDays}-${Number(order.delivery.estimatedDays) + 1} business days`,
+            order
+        };
+
+        // Real-time synchronization
+        const customerId = order.customer?._id || order.customer;
+        emitToAdmin("order:created", { order });
+        if (customerId) {
+            emitToUser(customerId, "order:created", { order });
+            emitToUser(customerId, "cart:updated", { items: [], totalItems: 0, grandTotal: 0 });
+        }
+        if (Array.isArray(order.items)) {
+            for (const item of order.items) {
+                const pId = item.product?._id || item.product;
+                if (pId) {
+                    Product.findById(pId).then((p) => {
+                        if (p) {
+                            emitToAll("product:updated", { product: p });
+                            emitToAll("inventory:updated", { productId: p._id, stock: p.stock });
+                        }
+                    }).catch(() => {});
+                }
+            }
+        }
+
+        // Send WhatsApp confirmation with Order ID, Amount, and Product details
+        try {
+            await sendOrderConfirmationWhatsApp({
+                order,
+                user: req.user,
+                recipientPhone: req.body?.phoneNumber || req.body?.phone
+            });
+        } catch (waErr) {
+            console.error("[WHATSAPP] Failed to send order confirmation for UPI order:", waErr.message);
+        }
+
+        return res.status(201).json({
+            success: true,
+            message: "UPI payment verified and order placed successfully.",
+            order: response
+        });
+    } catch (error) {
+        console.error("Verify Razorpay UPI Payment Error:", error);
+        if (error.productId) {
+            Product.findById(error.productId).then((p) => {
+                if (p) {
+                    emitToAll("product:updated", { product: p });
+                    emitToAll("inventory:updated", { productId: p._id, stock: p.stock });
+                }
+            }).catch(() => {});
+        }
+        return res.status(error.statusCode || 400).json({
+            success: false,
+            message: error.message || "Failed to verify UPI payment.",
+            isOutOfStock: Boolean(error.isOutOfStock)
+        });
+    }
 };
 // Get all orders of the logged-in user
 export const getMyOrders = async (req, res) => {
@@ -570,6 +687,46 @@ export const updateOrderStatus = async (req, res) => {
         if (req.user?.uid) {
             emitToUser(req.user.uid, "order:statusUpdated", { order, status });
         }
+
+        // Asynchronous Brand Email Notification Dispatch
+        (async () => {
+            try {
+                let recipientEmail = order.shippingAddress?.email;
+                if (!recipientEmail && customerId) {
+                    const cust = await User.findById(customerId).select("email name");
+                    if (cust && cust.email) recipientEmail = cust.email;
+                }
+                if (!recipientEmail && req.user?.email) {
+                    recipientEmail = req.user.email;
+                }
+
+                if (recipientEmail) {
+                    if (["Confirmed", "Packed", "Shipped", "Out for Delivery", "Delivered", "Returned"].includes(status)) {
+                        await sendDeliveryStatusEmail({
+                            to: recipientEmail,
+                            order,
+                            status,
+                            trackingCourier: order.shipping?.courier,
+                            trackingId: order.shipping?.trackingId,
+                            trackingUrl: order.shipping?.trackingUrl,
+                        });
+                    }
+
+                    if (status === "Refunded" || (status === "Delivered" && order.payment?.method === "COD")) {
+                        await sendPaymentStatusEmail({
+                            to: recipientEmail,
+                            order,
+                            paymentStatus: order.payment?.status,
+                            paymentMethod: order.payment?.method,
+                            amount: order.grandTotal,
+                        });
+                    }
+                }
+            } catch (notifyErr) {
+                console.warn("[ORDER NOTIFY ERROR] Failed to dispatch async email:", notifyErr.message);
+            }
+        })();
+
         if (status === "Cancelled" || status === "Returned") {
             if (Array.isArray(order.items)) {
                 for (const item of order.items) {
@@ -631,11 +788,15 @@ const generateInvoicePDF = (order, user, recipientEmail) => {
             });
             doc.on("error", (err) => reject(err));
 
-            // Brand Header
-            doc.fillColor("#10b981").fontSize(22).font("Helvetica-Bold").text("Clean Everyday", 40, 40);
-            doc.fillColor("#6b7280").fontSize(9).font("Helvetica").text("Clean Everyday India Private Limited", 40, 68);
-            doc.text("Plot No. 12, Whitefield Industrial Area, Bengaluru, KA - 560066", 40, 80);
-            doc.text("GSTIN: 29AAFCC1920D1Z5 | support@cleaneveryday.in", 40, 92);
+            // Dynamic Store Brand Header
+            const store = getStoreProfile();
+            const brandPrimary = store.brandColor || "#10b981";
+            const fullStoreAddress = `${store.addressLine || 'Plot No. 12, Industrial Area'}, ${store.district || 'Coimbatore'}, ${store.state || 'Tamil Nadu'} - ${store.pincode || '641001'}`;
+
+            doc.fillColor(brandPrimary).fontSize(22).font("Helvetica-Bold").text(store.storeName || "FORMA Studio", 40, 40);
+            doc.fillColor("#6b7280").fontSize(9).font("Helvetica").text(store.storeName ? `${store.storeName} Official Store` : "FORMA Studio Private Limited", 40, 68);
+            doc.text(fullStoreAddress, 40, 80);
+            doc.text(`GSTIN: ${store.gstNumber || '33AAAAA0000A1Z5'} | ${store.email || 'concierge@forma.com'} | ${store.phone || '+91 98765 43210'}`, 40, 92);
 
             // Invoice Title & Metadata
             doc.fillColor("#111827").fontSize(18).font("Helvetica-Bold").text("TAX INVOICE", 380, 40, { align: "right" });
@@ -678,8 +839,8 @@ const generateInvoicePDF = (order, user, recipientEmail) => {
             let itemsSubtotal = 0;
 
             items.forEach((item) => {
-                const title = item.title || item.product?.title || "Clean Everyday Formulation";
-                const sku = item.sku || "CE-PROD";
+                const title = item.title || item.product?.title || "Designer Essential";
+                const sku = item.sku || "FM-PROD";
                 const qty = item.quantity || 1;
                 const price = item.sellingPrice || item.unitPrice || item.retailPrice || 0;
                 const lineTotal = item.totalPrice || (price * qty);
@@ -742,7 +903,7 @@ const generateInvoicePDF = (order, user, recipientEmail) => {
             doc.font("Helvetica").fontSize(8).fillColor("#6b7280");
             doc.text("1. Goods once sold cannot be returned or exchanged without valid defect verification.", 40, y + 12);
             doc.text("2. All disputes are subject to Bengaluru judicial jurisdiction only.", 40, y + 24);
-            doc.text("Thank you for choosing Clean Everyday! support@cleaneveryday.in", 40, y + 42, { align: "center", width: 515 });
+            doc.text("Thank you for choosing FORMA Studio! concierge@forma.com", 40, y + 42, { align: "center", width: 515 });
 
             doc.end();
         } catch (err) {
@@ -790,7 +951,7 @@ const createTransporter = () => {
 
 export const sendInvoiceEmail = async (req, res) => {
     try {
-        const { uid } = req.user;
+        const { uid } = req.user || {};
         const { orderId } = req.body;
 
         if (!orderId) {
@@ -801,27 +962,30 @@ export const sendInvoiceEmail = async (req, res) => {
         }
 
         // Find logged in user
-        const user = await User.findOne({
+        const user = uid ? await User.findOne({
             uid,
             isDeleted: false
-        });
+        }) : null;
 
-        const recipientEmail = (user?.email || req.user?.email || "").toLowerCase().trim();
-
-        if (!recipientEmail) {
-            return res.status(400).json({
+        if (!user) {
+            return res.status(401).json({
                 success: false,
-                message: "No email address found for the logged-in account."
+                message: "Authentication required to request invoices."
             });
         }
 
-        // Find Order by ID or orderNumber
-        const isObjectId = mongoose.Types.ObjectId.isValid(orderId);
+        // Clean & match order ID or orderNumber
+        const cleanOrderId = String(orderId).trim();
+        const strippedOrderId = cleanOrderId.replace(/^ORD-/, '');
+        const isObjectId = mongoose.Types.ObjectId.isValid(cleanOrderId);
         const query = {
             isDeleted: false,
-            ...(isObjectId
-                ? { $or: [{ _id: orderId }, { orderNumber: orderId }] }
-                : { orderNumber: orderId })
+            $or: [
+                ...(isObjectId ? [{ _id: cleanOrderId }] : []),
+                { orderNumber: cleanOrderId },
+                { orderNumber: strippedOrderId },
+                { orderNumber: `ORD-${cleanOrderId}` }
+            ]
         };
 
         const order = await Order.findOne(query).populate("items.product");
@@ -833,23 +997,50 @@ export const sendInvoiceEmail = async (req, res) => {
             });
         }
 
+        // Authorization check: only order owner or administrator can request the invoice
+        const orderCustomerId = (order.customer?._id || order.customer || "").toString();
+        const requestingUserId = (user._id || "").toString();
+        const isOwner = requestingUserId && orderCustomerId === requestingUserId;
+        const isAdmin = Boolean(user.isAdmin && user.role === "Admin");
+
+        if (!isOwner && !isAdmin) {
+            return res.status(403).json({
+                success: false,
+                message: "Access denied. You are not authorized to view or send this invoice."
+            });
+        }
+
+        // Send exclusively to verified recipient to prevent spam relay and PII exfiltration
+        const recipientEmail = (
+            user.email ||
+            order.shippingAddress?.email ||
+            ""
+        ).toLowerCase().trim();
+
+        if (!recipientEmail) {
+            return res.status(400).json({
+                success: false,
+                message: "No verified email address found on file to deliver the invoice."
+            });
+        }
+
         // Generate PDF Invoice attachment buffer
         const pdfBuffer = await generateInvoicePDF(order, user, recipientEmail);
 
         // Build HTML items table
         const itemsList = order.items || [];
         const itemsHtml = itemsList.map((item) => {
-            const title = item.title || item.product?.title || "Clean Everyday Product";
+            const title = item.title || item.product?.title || "Designer Essential";
             const qty = item.quantity || 1;
             const price = item.sellingPrice || item.unitPrice || item.retailPrice || 0;
             const total = item.totalPrice || (price * qty);
             return `
-                <tr style="border-bottom: 1px solid #e5e7eb;">
-                    <td style="padding: 10px; font-weight: 600; color: #111827;">${title}</td>
-                    <td style="padding: 10px; color: #4b5563;">${item.sku || 'CE-PROD'}</td>
-                    <td style="padding: 10px; text-align: center; color: #111827;">${qty}</td>
-                    <td style="padding: 10px; text-align: right; color: #4b5563;">₹${price}</td>
-                    <td style="padding: 10px; text-align: right; font-weight: 600; color: #111827;">₹${total}</td>
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                    <td style="padding: 10px 12px; font-weight: 600; color: #0f172a;">${title}</td>
+                    <td style="padding: 10px 12px; color: #64748b; font-family: monospace;">${item.sku || 'FM-PROD'}</td>
+                    <td style="padding: 10px 12px; text-align: center; color: #0f172a;">${qty}</td>
+                    <td style="padding: 10px 12px; text-align: right; color: #475569;">₹${price}</td>
+                    <td style="padding: 10px 12px; text-align: right; font-weight: 700; color: #0f172a;">₹${total}</td>
                 </tr>
             `;
         }).join("");
@@ -861,64 +1052,27 @@ export const sendInvoiceEmail = async (req, res) => {
         const shippingAddr = order.shippingAddress || {};
         const fullAddrStr = `${shippingAddr.addressLine1 || ''} ${shippingAddr.addressLine2 || ''}, ${shippingAddr.city || ''}, ${shippingAddr.state || ''} - ${shippingAddr.postalCode || ''}`.trim();
 
-        const htmlTemplate = `
-            <div style="font-family: Arial, sans-serif; max-width: 680px; margin: 0 auto; padding: 24px; border: 1px solid #e5e7eb; border-radius: 12px; background: #ffffff;">
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #10b981; padding-bottom: 16px; margin-bottom: 20px;">
-                    <div>
-                        <h2 style="color: #10b981; margin: 0; font-size: 22px;">Clean Everyday</h2>
-                        <p style="margin: 4px 0 0; color: #6b7280; font-size: 12px;">Tax Invoice & Official Order Receipt</p>
-                    </div>
-                    <div style="text-align: right;">
-                        <span style="font-size: 14px; font-weight: bold; color: #111827;">Invoice: #${order.orderNumber}</span><br/>
-                        <span style="font-size: 12px; color: #6b7280;">Date: ${formattedDate}</span>
-                    </div>
-                </div>
+        const htmlTemplate = getInvoiceEmailTemplate({
+            order,
+            user,
+            recipientEmail,
+            itemsHtml,
+            formattedDate,
+            fullAddrStr
+        });
 
-                <div style="margin-bottom: 20px; padding: 12px; background: #f9fafb; border-radius: 8px; font-size: 13px;">
-                    <strong>Billed & Delivered To:</strong><br/>
-                    <span style="color: #111827; font-weight: 600;">${shippingAddr.fullName || user.name || 'Valued Customer'}</span><br/>
-                    <span style="color: #4b5563;">${fullAddrStr}</span><br/>
-                    <span style="color: #4b5563;">Phone: ${shippingAddr.phoneNumber || user.phoneNumber || ''}</span><br/>
-                    <span style="color: #4b5563;">Email: ${recipientEmail}</span>
-                </div>
-
-                <p style="font-size: 13px; color: #374151;">Please find attached your official Tax Invoice PDF (<strong>Invoice_${order.orderNumber}.pdf</strong>) containing full tax details, product line items, shipping charges, and payment information.</p>
-
-                <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 13px;">
-                    <thead>
-                        <tr style="background: #f3f4f6; color: #374151; font-weight: bold;">
-                            <th style="padding: 10px; text-align: left;">Product</th>
-                            <th style="padding: 10px; text-align: left;">SKU</th>
-                            <th style="padding: 10px; text-align: center;">Qty</th>
-                            <th style="padding: 10px; text-align: right;">Price</th>
-                            <th style="padding: 10px; text-align: right;">Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${itemsHtml}
-                    </tbody>
-                </table>
-
-                <div style="text-align: right; border-top: 1px solid #e5e7eb; padding-top: 12px; font-size: 14px; color: #111827;">
-                    <p style="margin: 4px 0;">Subtotal: <strong>₹${order.subtotal || order.grandTotal}</strong></p>
-                    <p style="margin: 4px 0; color: #10b981;">Shipping & Dispatch: <strong>${order.delivery?.charge ? `₹${order.delivery.charge}` : 'FREE'}</strong></p>
-                    <h3 style="margin: 8px 0 0; color: #047857; font-size: 18px;">Grand Total: ₹${order.grandTotal}</h3>
-                    <p style="margin: 4px 0; font-size: 12px; color: #6b7280;">Payment Method: ${order.payment?.method || 'COD'} (${order.payment?.status || 'Pending'})</p>
-                </div>
-
-                <div style="margin-top: 24px; text-align: center; border-top: 1px solid #e5e7eb; padding-top: 16px; font-size: 12px; color: #9ca3af;">
-                    Thank you for choosing <strong>Clean Everyday</strong>! For support, email us at support@cleaneveryday.in.
-                </div>
-            </div>
-        `;
+        const storeInfo = getStoreProfile();
+        const mailSender = process.env.EMAIL_USER
+            ? `"${storeInfo.storeName}" <${process.env.EMAIL_USER}>`
+            : (process.env.EMAIL_FROM || `"${storeInfo.storeName}" <${storeInfo.email || 'concierge@forma.com'}>`);
 
         const transporter = createTransporter();
         if (transporter) {
             try {
                 const info = await transporter.sendMail({
-                    from: process.env.EMAIL_FROM || '"Clean Everyday" <noreply@cleaneveryday.in>',
+                    from: mailSender,
                     to: recipientEmail,
-                    subject: `Tax Invoice PDF for Order #${order.orderNumber} - Clean Everyday`,
+                    subject: `Tax Invoice PDF for Order #${order.orderNumber} - ${storeInfo.storeName}`,
                     html: htmlTemplate,
                     attachments: [
                         {
@@ -931,9 +1085,13 @@ export const sendInvoiceEmail = async (req, res) => {
                 console.log(`[INVOICE EMAIL SUCCESS] Sent tax invoice PDF for Order #${order.orderNumber} to ${recipientEmail} (MessageId: ${info.messageId})`);
             } catch (emailErr) {
                 console.error("[INVOICE EMAIL SMTP ERROR] Failed to send email via SMTP:", emailErr.message);
+                return res.status(500).json({
+                    success: false,
+                    message: `Failed to deliver email: ${emailErr.message}`
+                });
             }
         } else {
-            console.log(`[INVOICE EMAIL LOGGED] Tax invoice PDF generated for Order #${order.orderNumber} and targeted to logged-in user: ${recipientEmail}`);
+            console.log(`[INVOICE EMAIL LOGGED] Tax invoice PDF generated for Order #${order.orderNumber} and targeted to: ${recipientEmail}`);
         }
 
         return res.status(200).json({

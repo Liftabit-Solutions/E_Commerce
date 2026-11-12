@@ -48,4 +48,21 @@ const verifyToken = async (req, res, next) => {
     }
 };
 
+export const verifyOptionalToken = async (req, res, next) => {
+    try {
+        const authHeader = req.headers.authorization;
+        if (authHeader && authHeader.startsWith("Bearer ")) {
+            const token = authHeader.split(" ")[1];
+            if (token && token.trim()) {
+                const decodedToken = await getAuth().verifyIdToken(token);
+                req.user = decodedToken;
+                req.token = token;
+            }
+        }
+    } catch (error) {
+        console.warn("[AUTH] Optional token notice:", error.message);
+    }
+    next();
+};
+
 export default verifyToken;
