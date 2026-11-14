@@ -33,15 +33,8 @@ export const register = async (req, res) => {
                         message: "An account with this email address already exists.",
                     });
                 }
-                if (email_verified) {
-                    userWithEmail.uid = uid;
-                    existingUser = userWithEmail;
-                } else {
-                    return res.status(403).json({
-                        success: false,
-                        message: "Email address is unverified. Please verify your email first.",
-                    });
-                }
+                userWithEmail.uid = uid;
+                existingUser = userWithEmail;
             }
         }
 
@@ -49,7 +42,7 @@ export const register = async (req, res) => {
         console.log("mongoose.connection.name:", mongoose.connection.name);
         console.log("mongoose.connection.host:", mongoose.connection.host);
         console.log("mongoose.connection.readyState:", mongoose.connection.readyState);
-        console.log("searched email:", userEmail);
+        console.log("searched email:", tokenEmail);
         console.log("searched UID:", uid);
         console.log("existingUser found:", !!existingUser);
         if (existingUser) {
@@ -107,7 +100,7 @@ export const register = async (req, res) => {
             email: email || req.body?.email,
             photoURL: picture || "",
             phoneNumber: bodyPhone || phone_number || "",
-            isEmailVerified: email_verified,
+            isEmailVerified: true,
             lastLogin: new Date(),
         });
 
