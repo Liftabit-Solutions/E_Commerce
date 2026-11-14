@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../../core/context/AppContext';
 import { X, Eye, EyeOff, Mail, Lock, User, Phone, CheckCircle, Shield, KeyRound } from 'lucide-react';
-import { signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
+import { signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 // @ts-ignore
 import { auth, googleProvider } from "../../../firebase";
 import axios from 'axios';
@@ -205,6 +205,14 @@ const AuthModal: React.FC = () => {
         }
       }
       
+      if (!user.emailVerified) {
+        try {
+          await sendEmailVerification(user);
+        } catch (verifErr) {
+          console.warn("Verification email limit reached or skipped:", verifErr);
+        }
+      }
+
       await fetchCurrentUser(responseUser);
       setIsLoading(false);
       closeAuthModal();
@@ -244,6 +252,12 @@ const AuthModal: React.FC = () => {
       const user = result.user;
       const token = await user.getIdToken();
       console.log("Firebase Access Token:", token);
+
+      try {
+        await sendEmailVerification(result.user);
+      } catch (verifErr) {
+        console.warn("Verification email could not be sent", verifErr);
+      }
 
       // Create user entry in DB with form data in body
       await axios.post(

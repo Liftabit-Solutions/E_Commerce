@@ -33,8 +33,15 @@ export const register = async (req, res) => {
                         message: "An account with this email address already exists.",
                     });
                 }
-                userWithEmail.uid = uid;
-                existingUser = userWithEmail;
+                if (email_verified) {
+                    userWithEmail.uid = uid;
+                    existingUser = userWithEmail;
+                } else {
+                    return res.status(403).json({
+                        success: false,
+                        message: "Email address is unverified. Please verify your email first.",
+                    });
+                }
             }
         }
 
@@ -100,7 +107,8 @@ export const register = async (req, res) => {
             email: email || req.body?.email,
             photoURL: picture || "",
             phoneNumber: bodyPhone || phone_number || "",
-            isEmailVerified: true,
+            role: "customer",
+            isEmailVerified: email_verified,
             lastLogin: new Date(),
         });
 

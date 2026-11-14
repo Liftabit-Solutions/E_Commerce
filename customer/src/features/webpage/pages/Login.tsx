@@ -18,7 +18,8 @@ import {
 import {
   signInWithPopup,
   signInWithEmailAndPassword,
-  createUserWithEmailAndPassword
+  createUserWithEmailAndPassword,
+  sendEmailVerification
 } from 'firebase/auth';
 // @ts-ignore
 import { auth, googleProvider } from '../../../../firebase';
@@ -192,6 +193,12 @@ const Login: React.FC<LoginProps> = ({ initialTab = 'signin' }) => {
         const user = result.user;
         const token = await user.getIdToken();
 
+        try {
+          await sendEmailVerification(result.user);
+        } catch (verifErr) {
+          console.warn('Verification email could not be sent', verifErr);
+        }
+
         const response = await axios.post(
           `${API_BASE}/auth/register`,
           {
@@ -258,6 +265,14 @@ const Login: React.FC<LoginProps> = ({ initialTab = 'signin' }) => {
             responseUser = fallbackRes.data?.user;
           } catch {
             throw loginErr;
+          }
+        }
+
+        if (!user.emailVerified) {
+          try {
+            await sendEmailVerification(user);
+          } catch (verifErr) {
+            console.warn('Verification email limit reached or skipped:', verifErr);
           }
         }
 

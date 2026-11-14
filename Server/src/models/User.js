@@ -213,9 +213,11 @@ const userSchema = new mongoose.Schema(
             type: String,
             enum: [
                 "customer",
+                "Customer",
+                "admin",
                 "Admin"
             ],
-            default: "Customer"
+            default: "customer"
         },
 
         status: {
